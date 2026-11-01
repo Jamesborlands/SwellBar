@@ -6,7 +6,7 @@
 
 <p align="center"><img src="docs/menubar.png" width="460" alt="Swellbar in the menu bar: a colored dot and 3-4+"></p>
 
-Swellbar puts the current surf height in your menu bar (`● 3-4+`), with the dot colored by
+Swellbar puts the current surf height in your menu bar (`● 4-5`), with the dot colored by
 how good it is. Click it for swell, wind, water temperature, weather, a tide chart and a
 five-day forecast. It works for any beach: search for yours and Swellbar finds the nearest buoys and
 stations on its own. No account, no API keys, free public data.
@@ -16,6 +16,14 @@ stations on its own. No account, no API keys, free public data.
   &nbsp;
   <picture><source media="(prefers-color-scheme: light)" srcset="docs/popover-huntington-light.png"><img src="docs/popover-huntington.png" width="320" alt="Swellbar report for Huntington Beach, California"></picture>
 </p>
+
+## On your desk too: SwellStrip
+
+<p align="center"><img src="docs/swellstrip.png" width="640" alt="SwellStrip e-ink display showing Del Mar at 4-5 ft"></p>
+
+**[SwellStrip](https://github.com/Jamesborlands/swellstrip)** is the same report on a 5.79"
+e-paper display (Elecrow CrowPanel, ESP32-S3) that sits on your desk and updates every hour.
+It uses Swellbar's data and surf math, so the two always agree.
 
 ## Five-day forecast
 
