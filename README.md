@@ -4,7 +4,7 @@
 
 <p align="center">The surf report for your beach, in the Mac menu bar.</p>
 
-<p align="center"><img src="docs/menubar.png" width="460" alt="Swellbar in the menu bar: a colored dot and 3-4+"></p>
+<p align="center"><img src="docs/menubar.png" width="460" alt="Swellbar in the menu bar: a colored dot and 4-5"></p>
 
 Swellbar puts the current surf height in your menu bar (`● 4-5`), with the dot colored by
 how good it is. Click it for swell, wind, water temperature, weather, a tide chart and a
