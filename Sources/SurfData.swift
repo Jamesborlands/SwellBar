@@ -8,6 +8,15 @@ struct BuoyReading {
     let waterTempF: Double?
 }
 
+/// One row of the buoy's spectral summary (.spec): the swell and wind-sea parts of the wave height.
+struct SpectralReading {
+    let time: Date
+    let swellFt: Double
+    let swellS: Double
+    let windSeaFt: Double?
+    let windSeaS: Double?
+}
+
 struct SwellComponent {
     let heightFt: Double
     let periodS: Double
@@ -57,6 +66,7 @@ struct DayForecast: Identifiable {
 struct SurfReport {
     var nearshore: BuoyReading?
     var nearshoreHistory: [BuoyReading] = []
+    var spectral: [SpectralReading] = [] // newest first
     var outer: BuoyReading?
     var swell: SwellComponent?
     var windSwell: SwellComponent?
@@ -71,7 +81,13 @@ struct SurfReport {
 
     /// Breaking height now: the last 2 hours of buoy readings averaged, because single readings
     /// jump a whole 0.1 m step from one half hour to the next.
+    /// Uses the swell/wind-sea split when the buoy has one, since clean groundswell breaks bigger
+    /// than the same total height of mixed chop.
     var surfNowFt: Double? {
+        if let latest = spectral.first {
+            let recent = spectral.filter { latest.time.timeIntervalSince($0.time) < 2 * 3600 }
+            return recent.map(Surf.breakingHeightFt).reduce(0, +) / Double(recent.count)
+        }
         guard let latest = nearshore else { return nil }
         let recent = nearshoreHistory.filter { latest.time.timeIntervalSince($0.time) < 2 * 3600 }
         let readings = recent.isEmpty ? [latest] : recent
@@ -119,6 +135,13 @@ enum SurfAPI {
             report.nearshore = readings.first
             if let latest = readings.first {
                 report.nearshoreHistory = readings.filter { latest.time.timeIntervalSince($0.time) <= 24 * 3600 }.reversed()
+            }
+        }
+        if let rows = await nearSpec.map(ndbcRows) {
+            report.spectral = rows.prefix(12).compactMap { row in
+                guard let time = ndbcDate(row), let h = num(row["SwH"]), let p = num(row["SwP"]), p > 0 else { return nil }
+                return SpectralReading(time: time, swellFt: h * 3.28084, swellS: p,
+                                       windSeaFt: num(row["WWH"]).map { $0 * 3.28084 }, windSeaS: num(row["WWP"]))
             }
         }
         if let rows = await nearSpec.map(ndbcRows), let row = rows.first(where: { num($0["SwH"]) != nil }) {

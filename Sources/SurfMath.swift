@@ -8,10 +8,25 @@ enum Surf {
     /// averaged over 2 hours): every one landed in the same range Surfline showed for that hour.
     static let calibration = 0.57
 
-    static func breakingHeightFt(buoyHeightFt: Double, periodS: Double) -> Double {
+    /// Used instead of `calibration` when the buoy splits its reading into swell and wind sea.
+    /// Total height mixed with short-period chop made clean groundswell read low: on 2026-11-01
+    /// 0.8 m of almost pure 15 s SW swell gave 2-3 ft while Surfline observed 4-5 ft. Sizing the
+    /// swell part alone fits both that day (4-5 ft) and Oct 25's mixed seas (2-3 ft).
+    static let swellCalibration = 0.9
+    /// Wind sea only counts when it outweighs the swell, and then at reduced weight.
+    static let windSeaWeight = 0.6
+
+    static func breakingHeightFt(buoyHeightFt: Double, periodS: Double, calibration: Double = calibration) -> Double {
         let h = buoyHeightFt * 0.3048
         let hb = 0.39 * pow(9.81, 0.2) * pow(periodS * h * h, 0.4) * calibration
         return hb / 0.3048
+    }
+
+    static func breakingHeightFt(_ s: SpectralReading) -> Double {
+        let swell = breakingHeightFt(buoyHeightFt: s.swellFt, periodS: s.swellS, calibration: swellCalibration)
+        guard let wwFt = s.windSeaFt, let wwS = s.windSeaS else { return swell }
+        let windSea = breakingHeightFt(buoyHeightFt: wwFt, periodS: wwS, calibration: swellCalibration)
+        return max(swell, windSeaWeight * windSea)
     }
 
     struct Range {

@@ -90,7 +90,7 @@ Data refreshes every 10 minutes, when your Mac wakes, and when you open the repo
 
 | What | Source |
 | --- | --- |
-| Surf height | Nearest [NDBC](https://www.ndbc.noaa.gov) wave buoy, turned into a breaking height (Komar–Gaughan, scaled to match Surfline) |
+| Surf height | Nearest [NDBC](https://www.ndbc.noaa.gov) wave buoy: the swell part of its spectral summary, turned into a breaking height (Komar–Gaughan, scaled to match Surfline) |
 | Swell and windswell | The buoy's spectral summary |
 | Outer buoy | The next nearest wave buoy |
 | Wind | Nearest NDBC weather station, else the Open-Meteo forecast |
